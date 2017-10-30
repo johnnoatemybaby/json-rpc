@@ -1,0 +1,40 @@
+{
+    "name": "terah/json-rpc",
+    "description": "A light weight JSON RPC client",
+    "keywords": [
+        "terah",
+        "fluent-assert"
+    ],
+    "homepage": "https://github.com/terah/json-rpc",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Terry Cullen",
+            "email": "terry@terah.com.au",
+            "homepage": "http://terah.com.au",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php" : ">=7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit" : "4.*",
+        "scrutinizer/ocular": "~1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Terah\\JsonRpc\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Terah\\JsonRpc\\Test\\": "tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
