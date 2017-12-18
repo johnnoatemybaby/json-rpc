@@ -12,7 +12,7 @@ class RpcError implements \JsonSerializable
     /** @var string  */
     protected $message              = '';
 
-    /** @var mixed */
+    /** @var RpcFieldErrorCollection */
     protected $data                 = null;
 
     const ERROR_INVALID_JSON        = -32700; //    Parse error	Invalid JSON was received by the server.  An error occurred on the server while parsing the JSON text.
@@ -90,9 +90,9 @@ class RpcError implements \JsonSerializable
     }
 
     /**
-     * @param mixed $data
+     * @param RpcFieldErrorCollection $data
      */
-    public function setData($data)
+    public function setData(RpcFieldErrorCollection $data)
     {
         $this->data = $data;
     }
