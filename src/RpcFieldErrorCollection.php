@@ -41,7 +41,7 @@ class RpcFieldErrorCollection
         $data = [];
         foreach ( $this->fieldErrors as $fieldError )
         {
-            $data[$fieldError->name] = $fieldError->message;
+            $data[$fieldError->getName()] = $fieldError->getMessages();
         }
 
         return (object)$data;
