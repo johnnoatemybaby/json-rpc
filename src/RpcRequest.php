@@ -3,6 +3,7 @@
 namespace Terah\JsonRpc;
 
 use function Terah\Assert\Assert;
+use stdClass;
 
 class RpcRequest implements \JsonSerializable
 {
@@ -21,9 +22,9 @@ class RpcRequest implements \JsonSerializable
     /**
      * RpcRequest constructor.
      *
-     * @param \stdClass|null $data
+     * @param stdClass|null $data
      */
-    public function __construct(\stdClass $data=null)
+    public function __construct(stdClass $data=null)
     {
         if ( ! $data )
         {
@@ -135,11 +136,89 @@ class RpcRequest implements \JsonSerializable
     }
 
     /**
-     * @return mixed
+     * @return stdClass
      */
     public function getParams()
     {
         return $this->params;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     * @throws \Terah\Assert\AssertionFailedException
+     */
+    public function getParamStr(string $name) : string
+    {
+        Assert($this->params)->propertyExists($name);
+        Assert($this->params->{$name})->scalar();
+
+        return (string)$this->params->{$name};
+    }
+
+    /**
+     * @param string $name
+     * @return int
+     * @throws \Terah\Assert\AssertionFailedException
+     */
+    public function getParamInt(string $name) : int
+    {
+        Assert($this->params)->propertyExists($name);
+        Assert($this->params->{$name})->numeric();
+
+        return (int)$this->params->{$name};
+    }
+
+    /**
+     * @param string $name
+     * @return float
+     * @throws \Terah\Assert\AssertionFailedException
+     */
+    public function getParamFloat(string $name) : float
+    {
+        Assert($this->params)->propertyExists($name);
+        Assert($this->params->{$name})->scalar();
+
+        return (float)$this->params->{$name};
+    }
+
+    /**
+     * @param string $name
+     * @return stdClass
+     * @throws \Terah\Assert\AssertionFailedException
+     */
+    public function getParamObj(string $name) : stdClass
+    {
+        Assert($this->params)->propertyExists($name);
+        Assert($this->params->{$name})->isObject();
+
+        return (object)$this->params->{$name};
+    }
+
+    /**
+     * @param string $name
+     * @return array
+     * @throws \Terah\Assert\AssertionFailedException
+     */
+    public function getParamArr(string $name) : array
+    {
+        Assert($this->params)->propertyExists($name);
+        Assert($this->params->{$name})->isObject();
+
+        return (array)$this->params->{$name};
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     * @throws \Terah\Assert\AssertionFailedException
+     */
+    public function getParamBool(string $name) : bool
+    {
+        Assert($this->params)->propertyExists($name);
+        Assert($this->params->{$name})->scalar();
+
+        return in_array($this->params->{$name}, ['1', 1, 'Yes', true, 'true']);
     }
 
     /**

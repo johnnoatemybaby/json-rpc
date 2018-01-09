@@ -24,7 +24,9 @@ class RpcBatchResponse extends ArrayObject implements \JsonSerializable
     {
         if ( $this->count() === 1 )
         {
-            return $this->offsetGet(0);
+            $responses   = $this->getArrayCopy();
+
+            return $responses[0];
         }
 
         return $this->getArrayCopy();

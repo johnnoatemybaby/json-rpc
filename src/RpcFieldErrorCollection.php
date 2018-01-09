@@ -23,7 +23,6 @@ class RpcFieldErrorCollection
         $this->fieldErrors = $fieldErrors;
     }
 
-
     /**
      * @param RpcFieldError $fieldError
      */
@@ -31,7 +30,6 @@ class RpcFieldErrorCollection
     {
         $this->fieldErrors[] = $fieldError;
     }
-
 
     /**
      * @return object
