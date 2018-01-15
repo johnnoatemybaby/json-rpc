@@ -34,12 +34,16 @@ class RpcResponse implements \JsonSerializable
         {
             return ;
         }
-        Assert($data)->code(-32700)->isObject('Parse error: Invalid JSON was received by the server.');
-        Assert($data)->code(-32600)->propertiesExist(['jsonrpc'], 'Invalid Request: The JSON sent is not a valid Request object.');
+        Assert($data)
+            ->code(-32700)
+            ->isObject('Parse error: Invalid JSON was received by the server.');
 
-        $this
-            ->setJsonrpc($data->jsonrpc)
-            ->setId($data->id ?? null);
+        Assert($data)
+            ->code(-32600)
+            ->propertiesExist(['jsonrpc'], 'Invalid Request: The JSON sent is not a valid Request object.');
+
+        $this->setJsonrpc($data->jsonrpc)->setId($data->id ?? null);
+
         if ( isset($data->error) )
         {
             $rpcError = new RpcError;
@@ -58,7 +62,8 @@ class RpcResponse implements \JsonSerializable
      */
     public function getJsonrpc() : string
     {
-        Assert($this->jsonrpc)->eq('2.0', 'The jsonrpc version must be 2.0');
+        Assert($this->jsonrpc)
+            ->eq('2.0', 'The jsonrpc version must be 2.0');
 
         return $this->jsonrpc;
     }
@@ -69,7 +74,8 @@ class RpcResponse implements \JsonSerializable
      */
     public function setJsonrpc(string $jsonrpc) : RpcResponse
     {
-        Assert($jsonrpc)->eq('2.0', 'The jsonrpc version must be 2.0');
+        Assert($jsonrpc)
+            ->eq('2.0', 'The jsonrpc version must be 2.0');
 
         $this->jsonrpc = $jsonrpc;
 
@@ -150,14 +156,12 @@ class RpcResponse implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        $result         =  new \stdClass();
-        $result->jsonrpc  = $this->getJsonrpc();
-        $result->result = $this->getResult();
+        $result             =  new \stdClass();
+        $result->jsonrpc    = $this->getJsonrpc();
+        $result->result     = $this->getResult();
         if ( $this->error )
         {
             $result->error  = $this->getError();
-
-            return $result;
         }
         if ( $this->id )
         {
