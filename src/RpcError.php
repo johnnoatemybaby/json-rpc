@@ -12,7 +12,7 @@ class RpcError implements \JsonSerializable
     /** @var string  */
     protected $message              = '';
 
-    /** @var mixed */
+    /** @var RpcFieldErrorCollection */
     protected $data                 = null;
 
     const ERROR_INVALID_JSON        = -32700; //    Parse error	Invalid JSON was received by the server.  An error occurred on the server while parsing the JSON text.
@@ -20,6 +20,7 @@ class RpcError implements \JsonSerializable
     const ERROR_METHOD_NOT_FOUND    = -32601; //	Method not found	The method does not exist / is not available.
     const ERROR_INVALID_PARAMS      = -32602; //	Invalid params	Invalid method parameter(s).
     const ERROR_INTERNAL_RPC_ERROR  = -32603; //	Internal error	Internal JSON-RPC error.
+    const ERROR_UNAUTHORISED        = -32000; //    Unauthorised
     //const ERROR_INVALID_JSON    = -32000 to -32099	Server error	Reserved for implementation-defined server-errors.
 
     /**
@@ -90,9 +91,9 @@ class RpcError implements \JsonSerializable
     }
 
     /**
-     * @param mixed $data
+     * @param RpcFieldErrorCollection $data
      */
-    public function setData($data)
+    public function setData(RpcFieldErrorCollection $data)
     {
         $this->data = $data;
     }

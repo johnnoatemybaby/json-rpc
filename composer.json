@@ -1,9 +1,10 @@
 {
     "name": "terah/json-rpc",
-    "description": "A light weight JSON RPC client",
+    "type": "library",
+    "description": "A library for managing JSON-RPC services",
     "keywords": [
         "terah",
-        "fluent-assert"
+        "json-rpc"
     ],
     "homepage": "https://github.com/terah/json-rpc",
     "license": "MIT",
@@ -11,30 +12,39 @@
         {
             "name": "Terry Cullen",
             "email": "terry@terah.com.au",
-            "homepage": "http://terah.com.au",
+            "homepage": "http://terrycullen.com.au",
             "role": "Developer"
         }
     ],
     "require": {
-        "php" : ">=7.0"
+        "php" : "~7.0",
+        "terah/fluent-assert": "2.*"
     },
     "require-dev": {
-        "phpunit/phpunit" : "4.*",
-        "scrutinizer/ocular": "~1.1"
+        "phpunit/phpunit" : ">=5.4.3",
+        "squizlabs/php_codesniffer": "^2.3"
     },
     "autoload": {
         "psr-4": {
-            "Terah\\JsonRpc\\": "src"
+            "terah\\JsonRpc\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Terah\\JsonRpc\\Test\\": "tests"
+            "terah\\JsonRpc\\": "tests"
         }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "check-style": "phpcs -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests",
+        "fix-style": "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests"
     },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
         }
+    },
+    "config": {
+        "sort-packages": true
     }
 }
