@@ -2,7 +2,7 @@
 
 namespace Terah\JsonRpc;
 
-class RpcFieldErrorCollection
+class RpcFieldErrorCollection implements \JsonSerializable
 {
     /** @var RpcFieldError[] */
     protected $fieldErrors = [];
@@ -36,12 +36,6 @@ class RpcFieldErrorCollection
      */
     public function jsonSerialize()
     {
-        $data = [];
-        foreach ( $this->fieldErrors as $fieldError )
-        {
-            $data[$fieldError->getName()] = $fieldError->getMessages();
-        }
-
-        return (object)$data;
+        return (object)$this->getFieldErrors();
     }
 }

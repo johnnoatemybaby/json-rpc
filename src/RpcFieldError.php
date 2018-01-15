@@ -2,10 +2,13 @@
 
 namespace Terah\JsonRpc;
 
-class RpcFieldError
+class RpcFieldError implements \JsonSerializable
 {
     /** @var string */
     protected $name     = '';
+
+    /** @var string[] */
+    protected $messages = [];
 
     /**
      * @return string
@@ -32,6 +35,14 @@ class RpcFieldError
     }
 
     /**
+     * @param string $message
+     */
+    public function setMessage(string $message) : void
+    {
+        $this->messages[] = $message;
+    }
+
+    /**
      * @param string[] $messages
      */
     public function setMessages(array $messages) : void
@@ -39,8 +50,23 @@ class RpcFieldError
         $this->messages = $messages;
     }
 
-    /** @var string[] */
-    protected $messages = [];
+    /**
+     * @return object
+     */
+    public function jsonSerialize()
+    {
+        return (object)$this->toArray();
+    }
 
+    /**
+     * @return array
+     */
+    public function toArray() : array
+    {
+        return [
+            'name'          => $this->getName(),
+            'messages'      => $this->getMessages()
+        ];
+    }
 
 }
