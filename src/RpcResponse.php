@@ -42,7 +42,9 @@ class RpcResponse implements \JsonSerializable
             ->code(-32600)
             ->propertiesExist(['jsonrpc'], 'Invalid Request: The JSON sent is not a valid Request object.');
 
-        $this->setJsonrpc($data->jsonrpc)->setId($data->id ?? null);
+        $this
+            ->setJsonrpc($data->jsonrpc)
+            ->setId($data->id ?? null);
 
         if ( isset($data->error) )
         {
@@ -62,8 +64,7 @@ class RpcResponse implements \JsonSerializable
      */
     public function getJsonrpc() : string
     {
-        Assert($this->jsonrpc)
-            ->eq('2.0', 'The jsonrpc version must be 2.0');
+        Assert($this->jsonrpc)->eq('2.0', 'The jsonrpc version must be 2.0');
 
         return $this->jsonrpc;
     }
@@ -74,8 +75,7 @@ class RpcResponse implements \JsonSerializable
      */
     public function setJsonrpc(string $jsonrpc) : RpcResponse
     {
-        Assert($jsonrpc)
-            ->eq('2.0', 'The jsonrpc version must be 2.0');
+        Assert($jsonrpc)->eq('2.0', 'The jsonrpc version must be 2.0');
 
         $this->jsonrpc = $jsonrpc;
 

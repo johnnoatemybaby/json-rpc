@@ -5,10 +5,22 @@ namespace Terah\JsonRpc;
 class RpcFieldError implements \JsonSerializable
 {
     /** @var string */
-    protected $name     = '';
+    protected $name         = '';
 
     /** @var string[] */
-    protected $messages = [];
+    protected $messages     = [];
+
+    /**
+     * RpcFieldError constructor.
+     *
+     * @param string $name
+     * @param string[]  $messages
+     */
+    public function __construct(string $name, array $messages)
+    {
+        $this->setName($name);
+        $this->setMessages($messages);
+    }
 
     /**
      * @return string
@@ -20,10 +32,13 @@ class RpcFieldError implements \JsonSerializable
 
     /**
      * @param string $name
+     * @return RpcFieldError
      */
-    public function setName(string $name) : void
+    public function setName(string $name) : RpcFieldError
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -35,19 +50,29 @@ class RpcFieldError implements \JsonSerializable
     }
 
     /**
-     * @param string $message
+     * @param array $messages
+     * @return RpcFieldError
      */
-    public function setMessage(string $message) : void
+    public function setMessages(array $messages) : RpcFieldError
     {
-        $this->messages[] = $message;
+        $this->messages     = [];
+        foreach ( $messages as $message )
+        {
+            $this->appendMessage($message);
+        }
+
+        return $this;
     }
 
     /**
-     * @param string[] $messages
+     * @param string $message
+     * @return RpcFieldError
      */
-    public function setMessages(array $messages) : void
+    public function appendMessage(string $message) : RpcFieldError
     {
-        $this->messages = $messages;
+        $this->messages[] = $message;
+
+        return $this;
     }
 
     /**
@@ -68,5 +93,4 @@ class RpcFieldError implements \JsonSerializable
             'messages'      => $this->getMessages()
         ];
     }
-
 }

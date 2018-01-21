@@ -31,12 +31,12 @@ class RpcRequest implements \JsonSerializable
             return ;
         }
         Assert($data)
-            ->code(-32700)
+            ->code(RpcError::ERROR_INVALID_JSON)
             ->isObject('Parse error: Invalid JSON was received by the server.');
 
         Assert($data)
-            ->code(-32600)
-            ->propertiesExist(['jsonrpc', 'method', 'params','id'], 'Invalid Request: The JSON sent is not a valid Request object.');
+            ->code(RpcError::ERROR_INVALID_REQUEST)
+            ->propertiesExist(['jsonrpc', 'method', 'params', 'id'], 'Invalid Request: The JSON sent is not a valid Request object.');
 
         $this
             ->setJsonrpc($data->jsonrpc)
@@ -59,11 +59,7 @@ class RpcRequest implements \JsonSerializable
      */
     public function setId($id) : RpcRequest
     {
-
-        Assert($id)
-            ->code(RpcError::ERROR_INVALID_REQUEST)
-            ->notNull('The ID not be null')
-            ->notEmpty('The ID not be empty');
+        $this->requestAssert($id)->notEmpty('The ID not be empty');
 
         $this->id = $id;
 
@@ -76,9 +72,7 @@ class RpcRequest implements \JsonSerializable
      */
     public function setJsonrpc(string $jsonrpc) : RpcRequest
     {
-        Assert($jsonrpc)
-            ->code(RpcError::ERROR_INVALID_REQUEST)
-            ->eq('2.0', 'The jsonrpc version must be 2.0');
+        $this->requestAssert($jsonrpc)->eq('2.0', 'The jsonrpc version must be 2.0');
 
         $this->jsonrpc = $jsonrpc;
 
@@ -90,9 +84,7 @@ class RpcRequest implements \JsonSerializable
      */
     public function getJsonrpc() : string
     {
-        Assert($this->jsonrpc)
-            ->code(RpcError::ERROR_INVALID_REQUEST)
-            ->eq('2.0', 'The jsonrpc version must be 2.0');
+        $this->requestAssert($this->jsonrpc)->eq('2.0', 'The jsonrpc version must be 2.0');
 
         return $this->jsonrpc;
     }
@@ -103,9 +95,7 @@ class RpcRequest implements \JsonSerializable
      */
     public function setMethod(string $method) : RpcRequest
     {
-        Assert($method)
-            ->code(RpcError::ERROR_INVALID_REQUEST)
-            ->notEmpty('The method must not be empty');
+        $this->requestAssert($method)->notEmpty('The method must not be empty');
 
         $this->method = $method;
 
@@ -117,9 +107,7 @@ class RpcRequest implements \JsonSerializable
      */
     public function getMethod() : string
     {
-        Assert($this->method)
-            ->code(RpcError::ERROR_INVALID_REQUEST)
-            ->notEmpty('The method must not be empty');
+        $this->requestAssert($this->method)->notEmpty('The method must not be empty');
 
         return $this->method;
     }
@@ -146,12 +134,10 @@ class RpcRequest implements \JsonSerializable
     /**
      * @param string $name
      * @return string
-     * @throws \Terah\Assert\AssertionFailedException
      */
     public function getParamStr(string $name) : string
     {
-        Assert($this->params)->propertyExists($name);
-        Assert($this->params->{$name})->scalar();
+        $this->paramAssert($name)->scalar("The parameter '{$name}' is not a scalar value.");
 
         return (string)$this->params->{$name};
     }
@@ -159,25 +145,33 @@ class RpcRequest implements \JsonSerializable
     /**
      * @param string $name
      * @return int
-     * @throws \Terah\Assert\AssertionFailedException
      */
     public function getParamInt(string $name) : int
     {
-        Assert($this->params)->propertyExists($name);
-        Assert($this->params->{$name})->numeric();
+        $this->paramAssert($name)->numeric("The parameter '{$name}' is not a numeric value.");
 
         return (int)$this->params->{$name};
     }
 
     /**
      * @param string $name
+     * @return int
+     */
+    public function getParamId(string $name) : int
+    {
+        $id = $this->getParamInt($name);
+        $this->paramAssert($name)->value($id)->id("The parameter '{$name}' is not an ID.");
+
+        return $id;
+    }
+
+    /**
+     * @param string $name
      * @return float
-     * @throws \Terah\Assert\AssertionFailedException
      */
     public function getParamFloat(string $name) : float
     {
-        Assert($this->params)->propertyExists($name);
-        Assert($this->params->{$name})->scalar();
+        $this->paramAssert($name)->scalar("The parameter '{$name}' is not a scalar value.");
 
         return (float)$this->params->{$name};
     }
@@ -185,12 +179,10 @@ class RpcRequest implements \JsonSerializable
     /**
      * @param string $name
      * @return stdClass
-     * @throws \Terah\Assert\AssertionFailedException
      */
     public function getParamObj(string $name) : stdClass
     {
-        Assert($this->params)->propertyExists($name);
-        Assert($this->params->{$name})->isObject();
+        $this->paramAssert($name)->isObject("The parameter '{$name}' is not an object.");
 
         return (object)$this->params->{$name};
     }
@@ -198,12 +190,10 @@ class RpcRequest implements \JsonSerializable
     /**
      * @param string $name
      * @return array
-     * @throws \Terah\Assert\AssertionFailedException
      */
     public function getParamArr(string $name) : array
     {
-        Assert($this->params)->propertyExists($name);
-        Assert($this->params->{$name})->isObject();
+        $this->paramAssert($name)->isObject("The parameter '{$name}' is not an object.");
 
         return (array)$this->params->{$name};
     }
@@ -211,14 +201,37 @@ class RpcRequest implements \JsonSerializable
     /**
      * @param string $name
      * @return bool
-     * @throws \Terah\Assert\AssertionFailedException
      */
     public function getParamBool(string $name) : bool
     {
-        Assert($this->params)->propertyExists($name);
-        Assert($this->params->{$name})->scalar();
+        $this->paramAssert($name)->scalar("The parameter '{$name}' is not a scalar value.");
 
         return in_array($this->params->{$name}, ['1', 1, 'Yes', true, 'true']);
+    }
+
+    /**
+     * @param string $name
+     * @return \Terah\Assert\Assert
+     */
+    protected function paramAssert(string $name) : \Terah\Assert\Assert
+    {
+        Assert($this->params)
+            ->name($name)
+            ->code(RpcError::ERROR_INVALID_PARAMS)
+            ->propertyExists($name, "The parameter '{$name}' was not specified.");
+
+        return Assert($this->params->{$name})
+            ->name($name)
+            ->code(RpcError::ERROR_INVALID_PARAMS);
+    }
+
+    /**
+     * @param mixed $value
+     * @return \Terah\Assert\Assert
+     */
+    protected function requestAssert($value) : \Terah\Assert\Assert
+    {
+        return Assert($value)->code(RpcError::ERROR_INVALID_REQUEST);
     }
 
     /**
