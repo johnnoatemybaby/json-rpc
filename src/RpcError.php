@@ -64,6 +64,7 @@ class RpcError implements \JsonSerializable
                 $this->setData($e->getData());
             }
         }
+        $this->data = new RpcFieldErrorCollection();
     }
 
     /**
@@ -127,10 +128,13 @@ class RpcError implements \JsonSerializable
 
     /**
      * @param RpcFieldErrorCollection $data
+     * @return RpcError
      */
-    public function setData(RpcFieldErrorCollection $data)
+    public function setData(RpcFieldErrorCollection $data) : RpcError
     {
         $this->data = $data;
+        
+        return $this;
     }
 
     /**
@@ -139,10 +143,6 @@ class RpcError implements \JsonSerializable
      */
     public function appendData(RpcFieldError $error) : RpcError
     {
-        if ( is_null($this->data) )
-        {
-            $this->data     = new RpcFieldErrorCollection();
-        }
         $this->data->setFieldError($error);
 
         return $this;
