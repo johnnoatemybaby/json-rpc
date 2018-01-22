@@ -46,12 +46,6 @@ class RpcFieldErrorCollection implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        $data = [];
-        foreach ( $this->fieldErrors as $fieldError )
-        {
-            $data[$fieldError->getName()] = $fieldError->getMessages();
-        }
-
-        return (object)$data;
+        return (object)$this->getFieldErrors();
     }
 }

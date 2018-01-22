@@ -16,10 +16,14 @@ class RpcFieldError implements \JsonSerializable
      * @param string $name
      * @param string[]  $messages
      */
-    public function __construct(string $name, array $messages)
+    public function __construct(string $name, array $messages=[])
     {
         $this->setName($name);
-        $this->setMessages($messages);
+
+        if ( ! empty($messages) )
+        {
+            $this->setMessages($messages);
+        }
     }
 
     /**
