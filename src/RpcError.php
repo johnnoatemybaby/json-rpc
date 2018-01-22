@@ -3,6 +3,7 @@
 namespace Terah\JsonRpc;
 
 use function Terah\Assert\Assert;
+use Terah\Assert\AssertionFailedException;
 
 class RpcError implements \JsonSerializable
 {
@@ -21,7 +22,19 @@ class RpcError implements \JsonSerializable
     const ERROR_INVALID_PARAMS      = -32602; //	Invalid params	Invalid method parameter(s).
     const ERROR_INTERNAL_RPC_ERROR  = -32603; //	Internal error	Internal JSON-RPC error.
     const ERROR_UNAUTHORISED        = -32000; //    Unauthorised
+    const ERROR_INVALID_CREDENTIALS = -32001; //    Unauthorised
     //const ERROR_INVALID_JSON    = -32000 to -32099	Server error	Reserved for implementation-defined server-errors.
+
+    static protected $messages      = [
+        self::ERROR_INVALID_JSON        => 'Parse error.',      // Invalid JSON was received by the server. An error occurred on the server while parsing the JSON text.
+        self::ERROR_INVALID_REQUEST     => 'Invalid Request.',  // The JSON sent is not a valid Request object.
+        self::ERROR_METHOD_NOT_FOUND    => 'Method not found.', // The method does not exist / is not available.
+        self::ERROR_INVALID_PARAMS      => 'Invalid params.',   // Invalid method parameter(s).
+        self::ERROR_INTERNAL_RPC_ERROR  => 'Internal error.',   // Internal JSON-RPC error.
+        self::ERROR_UNAUTHORISED        => 'Unauthorised.',     // Method not allowed
+        self::ERROR_INVALID_CREDENTIALS => 'Invalid username or password.',     // Invalid username or password.
+        // -32000 to -32099	Server error	Reserved for implementation-defined server-errors.
+     ];
 
     /**
      * RpcError constructor.
@@ -33,7 +46,25 @@ class RpcError implements \JsonSerializable
         {
             $this->setCode($e->getCode());
             $this->setMessage($e->getMessage());
+            if ( $e->getCode() === self::ERROR_INVALID_PARAMS )
+            {
+                $this->setMessage(static::$messages[self::ERROR_INVALID_PARAMS]);
+            }
+            if ( $e instanceof AssertionFailedException )
+            {
+                $name       = $e->getProperty();
+                $message    = $e->getMessage();
+                if ( $name && $name !== 'General Error' && $message )
+                {
+                    $this->appendData(new RpcFieldError($name, [$message]));
+                }
+            }
+            if ( $e instanceof RpcException )
+            {
+                $this->setData($e->getData());
+            }
         }
+        $this->data = new RpcFieldErrorCollection();
     }
 
     /**
@@ -54,11 +85,16 @@ class RpcError implements \JsonSerializable
 
     /**
      * @param int $code
+     * @param bool $setDefaultMessage
      * @return RpcError
      */
-    public function setCode(int $code) : RpcError
+    public function setCode(int $code, bool $setDefaultMessage=false) : RpcError
     {
         $this->code = $code;
+        if ( $setDefaultMessage && isset(static::$messages[$code]) )
+        {
+            $this->setMessage(static::$messages[$code]);
+        }
 
         return $this;
     }
@@ -92,10 +128,24 @@ class RpcError implements \JsonSerializable
 
     /**
      * @param RpcFieldErrorCollection $data
+     * @return RpcError
      */
-    public function setData(RpcFieldErrorCollection $data)
+    public function setData(RpcFieldErrorCollection $data) : RpcError
     {
         $this->data = $data;
+        
+        return $this;
+    }
+
+    /**
+     * @param RpcFieldError $error
+     * @return RpcError
+     */
+    public function appendData(RpcFieldError $error) : RpcError
+    {
+        $this->data->setFieldError($error);
+
+        return $this;
     }
 
     /**
