@@ -53,6 +53,7 @@ class RpcError implements \JsonSerializable
      */
     public function __construct(\Exception $e=null)
     {
+        $this->data = new RpcFieldErrorCollection();
         if ( $e )
         {
             $this->setCode((int)$e->getCode());
@@ -75,7 +76,6 @@ class RpcError implements \JsonSerializable
                 $this->setData($e->getData());
             }
         }
-        $this->data = new RpcFieldErrorCollection();
     }
 
     /**

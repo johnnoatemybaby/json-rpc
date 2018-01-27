@@ -46,6 +46,6 @@ class RpcFieldErrorCollection implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return (object)$this->getFieldErrors();
+        return $this->getFieldErrors();
     }
 }
