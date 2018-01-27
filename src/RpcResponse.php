@@ -170,4 +170,18 @@ class RpcResponse implements \JsonSerializable
 
         return $result;
     }
+
+    /**
+     * @return int
+     * @throws \Terah\Assert\AssertionFailedException
+     */
+    public function getHttpStatusCode() : int
+    {
+        if ( $this->error )
+        {
+            return $this->error->getHttpStatusCode();
+        }
+
+        return 200;
+    }
 }

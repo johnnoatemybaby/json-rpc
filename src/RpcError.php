@@ -36,6 +36,17 @@ class RpcError implements \JsonSerializable
         // -32000 to -32099	Server error	Reserved for implementation-defined server-errors.
      ];
 
+    static protected $httpCodes     = [
+        self::ERROR_INVALID_JSON        => 400, // The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, size too large, invalid request message framing, or deceptive request routing)
+        self::ERROR_INVALID_REQUEST     => 400, // The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, size too large, invalid request message framing, or deceptive request routing)
+        self::ERROR_METHOD_NOT_FOUND    => 501, // The server either does not recognize the request method, or it lacks the ability to fulfil the request. Usually this implies future availability (e.g., a new feature of a web-service API).
+        self::ERROR_INVALID_PARAMS      => 400, // The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, size too large, invalid request message framing, or deceptive request routing)
+        self::ERROR_INTERNAL_RPC_ERROR  => 500, // A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+        self::ERROR_UNAUTHORISED        => 403, // The request was valid, but the server is refusing action. The user might not have the necessary permissions for a resource, or may need an account of some sort.
+        self::ERROR_INVALID_CREDENTIALS => 401, // Specifically for use when authentication is required and has failed or has not yet been provided.
+        // -32000 to -32099	Server error	// A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+    ];
+
     /**
      * RpcError constructor.
      * @param \Exception|null $e
@@ -44,7 +55,7 @@ class RpcError implements \JsonSerializable
     {
         if ( $e )
         {
-            $this->setCode($e->getCode());
+            $this->setCode((int)$e->getCode());
             $this->setMessage($e->getMessage());
             if ( $e->getCode() === self::ERROR_INVALID_PARAMS )
             {
@@ -133,7 +144,7 @@ class RpcError implements \JsonSerializable
     public function setData(RpcFieldErrorCollection $data) : RpcError
     {
         $this->data = $data;
-        
+
         return $this;
     }
 
@@ -177,6 +188,16 @@ class RpcError implements \JsonSerializable
         return true;
     }
 
+    /**
+     * @return int
+     * @throws AssertionFailedException
+     */
+    public function getHttpStatusCode() : int
+    {
+        Assert($this->code)
+            ->int('The error code must be an integer')
+            ->notEq(0, 'The error code must not be zero');
 
-
+        return static::$httpCodes[$this->code] ?? 500;
+    }
 }
