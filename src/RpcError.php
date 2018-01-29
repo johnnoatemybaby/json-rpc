@@ -154,7 +154,7 @@ class RpcError implements \JsonSerializable
      */
     public function appendData(RpcFieldError $error) : RpcError
     {
-        $this->data->setFieldError($error);
+        $this->data->appendFieldError($error);
 
         return $this;
     }
