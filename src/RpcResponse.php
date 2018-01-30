@@ -20,7 +20,7 @@ class RpcResponse implements \JsonSerializable
     /** @var RpcError  */
     protected $error        = null;
 
-    /** @var int */
+    /** @var mixed */
     protected $id           = null;
 
     /**
@@ -129,7 +129,7 @@ class RpcResponse implements \JsonSerializable
     }
 
     /**
-     * @return int
+     * @return mixed
      */
     public function getId()
     {
@@ -137,7 +137,7 @@ class RpcResponse implements \JsonSerializable
     }
 
     /**
-     * @param $id
+     * @param mixed $id
      * @return RpcResponse
      */
     public function setId($id) : RpcResponse
@@ -169,5 +169,19 @@ class RpcResponse implements \JsonSerializable
         }
 
         return $result;
+    }
+
+    /**
+     * @return int
+     * @throws \Terah\Assert\AssertionFailedException
+     */
+    public function getHttpStatusCode() : int
+    {
+        if ( $this->error )
+        {
+            return $this->error->getHttpStatusCode();
+        }
+
+        return 200;
     }
 }

@@ -46,7 +46,7 @@ class RpcRequest implements \JsonSerializable
     }
 
     /**
-     * @return int
+     * @return mixed
      */
     public function getId()
     {
@@ -54,7 +54,7 @@ class RpcRequest implements \JsonSerializable
     }
 
     /**
-     * @param $id
+     * @param mixed $id
      * @return RpcRequest
      */
     public function setId($id) : RpcRequest

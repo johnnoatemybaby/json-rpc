@@ -24,7 +24,7 @@ class RpcFieldErrorCollection implements \JsonSerializable
         $this->fieldErrors  = [];
         foreach ( $fieldErrors as $error )
         {
-            $this->setFieldError($error);
+            $this->appendFieldError($error);
         }
 
         return $this;
@@ -34,7 +34,7 @@ class RpcFieldErrorCollection implements \JsonSerializable
      * @param RpcFieldError $fieldError
      * @return RpcFieldErrorCollection
      */
-    public function setFieldError(RpcFieldError $fieldError) : RpcFieldErrorCollection
+    public function appendFieldError(RpcFieldError $fieldError) : RpcFieldErrorCollection
     {
         $this->fieldErrors[] = $fieldError;
 
@@ -46,6 +46,6 @@ class RpcFieldErrorCollection implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return (object)$this->getFieldErrors();
+        return $this->getFieldErrors();
     }
 }

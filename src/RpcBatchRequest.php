@@ -30,12 +30,15 @@ class RpcBatchRequest extends ArrayObject implements \JsonSerializable
     }
 
     /**
-     * @param RpcRequest $value
+     * @param mixed $value
+     * @return RpcBatchRequest
      */
-    public function append($value)
+    public function append($value) : RpcBatchRequest
     {
         Assert($value)->isInstanceOf(RpcRequest::class);
         parent::append($value);
+
+        return $this;
     }
 
     /**

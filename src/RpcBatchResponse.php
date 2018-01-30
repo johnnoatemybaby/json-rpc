@@ -10,11 +10,14 @@ class RpcBatchResponse extends ArrayObject implements \JsonSerializable
 {
     /**
      * @param RpcResponse $value
+     * @return RpcBatchResponse
      */
-    public function append($value)
+    public function append($value) : RpcBatchResponse
     {
         Assert($value)->isInstanceOf(RpcResponse::class);
         parent::append($value);
+
+        return $this;
     }
 
     /**
