@@ -83,7 +83,7 @@ class RpcError implements \JsonSerializable
      */
     public function setMethodNotExistsError() : RpcError
     {
-        return $this->setCode(self::ERROR_METHOD_NOT_FOUND)->setMessage('The method does not exist');
+        return $this->setCode(self::ERROR_METHOD_NOT_FOUND,true);
     }
 
     /**
